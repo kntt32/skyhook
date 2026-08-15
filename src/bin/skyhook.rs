@@ -19,22 +19,22 @@ fn main() {
     }
     let packet;
     if io::stdin().is_terminal() {
-        packet = sky::Packet {
-            kind: sky::PacketKind::Get,
+        packet = skyhook::Packet {
+            kind: skyhook::PacketKind::Get,
             data: Vec::new(),
         };
     } else {
         let mut data = Vec::new();
         io::stdin().read_to_end(&mut data).unwrap();
-        packet = sky::Packet {
-            kind: sky::PacketKind::Set,
+        packet = skyhook::Packet {
+            kind: skyhook::PacketKind::Set,
             data,
         };
     }
-    let client = sky::Client::new(ip);
+    let client = skyhook::Client::new(ip);
     match client.access(packet) {
         Ok(packet) => {
-            if packet.kind == sky::PacketKind::Get {
+            if packet.kind == skyhook::PacketKind::Get {
                 io::stdout().write_all(&packet.data).unwrap();
             }
         }
