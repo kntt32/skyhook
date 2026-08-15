@@ -10,7 +10,7 @@ fn main() {
         && let Ok(b) = a.parse()
     {
         ip = b;
-    } else if let Ok(a) = env::var("AIRHOOK")
+    } else if let Ok(a) = env::var("SKYHOOK")
         && let Ok(b) = a.parse()
     {
         ip = b;
