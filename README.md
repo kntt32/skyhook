@@ -25,3 +25,10 @@ Hello
 > skyhook 192.168.0.1
 Hello
 ```
+or
+```
+> export SKYHOOK=192.168.0.1
+> echo "Hello" | skyhook
+> skyhook
+Hello
+```
