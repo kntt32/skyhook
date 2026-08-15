@@ -21,7 +21,7 @@ Hello
 
 ### Connect to a remote device
 ```
-> echo "Hello" | skyhook
-> skyhook
+> echo "Hello" | skyhook 192.168.0.1
+> skyhook 192.168.0.1
 Hello
 ```
