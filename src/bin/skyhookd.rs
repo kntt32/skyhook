@@ -3,8 +3,8 @@ fn main() {
     println!("ip: {}", server.ip().unwrap());
     loop {
         match server.listen() {
-            Ok((packet, addr)) => {
-                eprintln!("log: {}: {}", addr, packet);
+            Ok((kind, addr)) => {
+                eprintln!("log: {}: {}", addr, kind);
             }
             Err(e) => {
                 eprintln!("{}", e);

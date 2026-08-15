@@ -17,7 +17,11 @@ impl Client {
         let mut stream = net::TcpStream::connect(self.addr)?;
         stream.set_write_timeout(Some(timeout))?;
         stream.set_read_timeout(Some(timeout))?;
-        stream.write_all(&packet.to_vec())?;
+
+        stream.write_all(&[packet.kind.to_code()])?;
+        if !packet.data.is_empty() {
+            stream.write_all(&packet.data)?;
+        }
         stream.shutdown(net::Shutdown::Write)?;
         let mut buf = Vec::new();
         stream.read_to_end(&mut buf)?;

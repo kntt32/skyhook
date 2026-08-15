@@ -19,7 +19,7 @@ impl Server {
         ip::get_local_ip()
     }
 
-    pub fn listen(&mut self) -> io::Result<(Packet, net::SocketAddr)> {
+    pub fn listen(&mut self) -> io::Result<(PacketKind, net::SocketAddr)> {
         let timeout = time::Duration::from_millis(10000);
         let (mut stream, addr) = self.socket.accept()?;
         stream.set_write_timeout(Some(timeout))?;
@@ -31,25 +31,16 @@ impl Server {
         };
         match packet.kind {
             PacketKind::Get => {
-                stream.write_all(
-                    &Packet {
-                        kind: PacketKind::Get,
-                        data: self.data.clone(),
-                    }
-                    .to_vec(),
-                )?;
+                stream.write_all(&[PacketKind::Get.to_code()])?;
+                if !self.data.is_empty() {
+                    stream.write_all(&self.data)?;
+                }
             }
             PacketKind::Set => {
-                self.data.clone_from(&packet.data);
-                stream.write_all(
-                    &Packet {
-                        kind: PacketKind::Set,
-                        data: Vec::new(),
-                    }
-                    .to_vec(),
-                )?;
+                self.data = packet.data;
+                stream.write_all(&[PacketKind::Set.to_code()])?;
             }
         }
-        Ok((packet, addr))
+        Ok((packet.kind, addr))
     }
 }

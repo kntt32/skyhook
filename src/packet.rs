@@ -14,16 +14,11 @@ impl Packet {
         vec
     }
 
-    pub fn from_vec(vec: Vec<u8>) -> Option<Self> {
-        let kind = PacketKind::from_code(vec.first().copied()?)?;
-        let data = Vec::from(&vec[1..]);
+    pub fn from_vec(mut vec: Vec<u8>) -> Option<Self> {
+        let first = vec.get(0).copied()?;
+        let kind = PacketKind::from_code(first)?;
+        let data = vec.split_off(1);
         Some(Self { kind, data })
-    }
-}
-
-impl fmt::Display for Packet {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}({})", self.kind, self.data.len())
     }
 }
 
