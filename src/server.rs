@@ -27,7 +27,7 @@ impl Server {
         let mut code = 0;
         stream.read_exact(slice::from_mut(&mut code))?;
         let Some(kind) = PacketKind::from_code(code) else {
-            return Err(io::Error::new(io::ErrorKind::Other, "invalid response"));
+            return Err(io::Error::new(io::ErrorKind::Other, "invalid request"));
         };
         let mut data = Vec::new();
         stream.read_to_end(&mut data)?;
