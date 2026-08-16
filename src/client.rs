@@ -17,15 +17,16 @@ impl Client {
         let mut stream = net::TcpStream::connect(self.addr)?;
         stream.set_write_timeout(Some(timeout))?;
         stream.set_read_timeout(Some(timeout))?;
-
         stream.write_all(&[packet.kind.to_code()])?;
-        if !packet.data.is_empty() {
-            stream.write_all(&packet.data)?;
-        }
+        stream.write_all(&packet.data)?;
         stream.shutdown(net::Shutdown::Write)?;
-        let mut buf = Vec::new();
-        stream.read_to_end(&mut buf)?;
-        Packet::from_vec(buf)
-            .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "invalid response"))
+        let mut code = 0;
+        stream.read_exact(slice::from_mut(&mut code))?;
+        let Some(kind) = PacketKind::from_code(code) else {
+            return Err(io::Error::new(io::ErrorKind::Other, "invalid response"));
+        };
+        let mut data = Vec::new();
+        stream.read_to_end(&mut data)?;
+        Ok(Packet { kind, data })
     }
 }

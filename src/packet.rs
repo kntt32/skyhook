@@ -6,22 +6,6 @@ pub struct Packet {
     pub data: Vec<u8>,
 }
 
-impl Packet {
-    pub fn to_vec(self) -> Vec<u8> {
-        let mut vec = Vec::with_capacity(self.data.len() + 1);
-        vec.push(self.kind.to_code());
-        vec.extend_from_slice(&self.data);
-        vec
-    }
-
-    pub fn from_vec(mut vec: Vec<u8>) -> Option<Self> {
-        let first = vec.get(0).copied()?;
-        let kind = PacketKind::from_code(first)?;
-        let data = vec.split_off(1);
-        Some(Self { kind, data })
-    }
-}
-
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum PacketKind {
     Set,

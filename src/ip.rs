@@ -25,7 +25,7 @@ pub fn get_local_ip() -> io::Result<net::Ipv4Addr> {
                 if family == libc::AF_INET {
                     let sockaddr_in = ifaddr.ifa_addr as *const libc::sockaddr_in;
                     let sin_addr = (*sockaddr_in).sin_addr;
-                    let ip_bytes = sin_addr.s_addr.to_be_bytes();
+                    let ip_bytes = sin_addr.s_addr.to_ne_bytes();
                     found_ip = Some(net::Ipv4Addr::from(ip_bytes));
                     break;
                 }

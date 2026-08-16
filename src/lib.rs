@@ -11,4 +11,5 @@ use std::io;
 use std::io::Read;
 use std::io::Write;
 use std::net;
+use std::slice;
 use std::time;

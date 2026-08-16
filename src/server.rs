@@ -24,23 +24,24 @@ impl Server {
         let (mut stream, addr) = self.socket.accept()?;
         stream.set_write_timeout(Some(timeout))?;
         stream.set_read_timeout(Some(timeout))?;
-        let mut buf = Vec::new();
-        stream.read_to_end(&mut buf)?;
-        let Some(packet) = Packet::from_vec(buf) else {
-            return Err(io::Error::new(io::ErrorKind::Other, "invalid request"));
+        let mut code = 0;
+        stream.read_exact(slice::from_mut(&mut code))?;
+        let Some(kind) = PacketKind::from_code(code) else {
+            return Err(io::Error::new(io::ErrorKind::Other, "invalid response"));
         };
-        match packet.kind {
+        let mut data = Vec::new();
+        stream.read_to_end(&mut data)?;
+        let request_packet = Packet { kind, data };
+        match request_packet.kind {
             PacketKind::Get => {
                 stream.write_all(&[PacketKind::Get.to_code()])?;
-                if !self.data.is_empty() {
-                    stream.write_all(&self.data)?;
-                }
+                stream.write_all(&self.data)?;
             }
             PacketKind::Set => {
-                self.data = packet.data;
+                self.data = request_packet.data;
                 stream.write_all(&[PacketKind::Set.to_code()])?;
             }
         }
-        Ok((packet.kind, addr))
+        Ok((request_packet.kind, addr))
     }
 }
